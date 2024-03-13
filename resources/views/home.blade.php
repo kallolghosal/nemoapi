@@ -76,7 +76,7 @@
                                 <li>Check mobile to download mobile nos only</li>
                                 <li>Check both to download both</li>
                                 <li>Click Download</li>
-                                <li>A csv file with cleaned list of mobile nos will be downloaded</li>
+                                <li>A csv file with cleaned list of selected data will be downloaded</li>
                             </ul>
                         </div>
                     </div>
