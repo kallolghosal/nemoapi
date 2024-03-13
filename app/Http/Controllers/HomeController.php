@@ -8,6 +8,7 @@ use App\Models\VesselModel;
 use App\Models\CountryModel;
 use App\Models\DataModel;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -35,9 +36,57 @@ class HomeController extends Controller
     }
 
     public function downloaddata (Request $request) {
-        //dd($request->country);
-        $data = DataModel::whereIn('c_rank', $request->rank)->whereIn('c_vessel', $request->vessel)->where('nationalty', $request->country)->where('p_mobi1', '<>', '')->select('p_mobi1')->get();
-        //dd($data);
+        //dd($request->vessel);
+        if ($request->mobile && !$request->email) {
+            $data = DataModel::whereIn('c_rank', $request->rank)->whereIn('c_vessel', $request->vessel)->where('nationalty', $request->country)->where('p_mobi1', '<>', '')->select('p_mobi1')->get();
+            //dd($data);
+            $columns = array('mobilenos');
+            $callback = function() use($data, $columns) {
+                $file = fopen('php://output', 'w');
+                
+                fputcsv($file, $columns);
+                foreach ($data as $task) {
+                    fputcsv($file, [
+                        substr($task->p_mobi1, -10)
+                    ]);
+                }
+                fclose($file);
+            };
+        } else if ($request->email && !$request->mobile) {
+            $data = DataModel::whereIn('c_rank', $request->rank)->whereIn('c_vessel', $request->vessel)->where('nationalty', $request->country)->where('email1', '<>', '')->select('email1')->get();
+            //dd($data);
+            $columns = array('emails');
+            $callback = function() use($data, $columns) {
+                $file = fopen('php://output', 'w');
+                
+                fputcsv($file, $columns);
+                foreach ($data as $task) {
+                    fputcsv($file, [
+                        //substr($task->p_mobi1, -10)
+                        $task->email1
+                    ]);
+                }
+                fclose($file);
+            };
+        } else if ($request->mobile && $request->email) {
+            $data = DataModel::whereIn('c_rank', $request->rank)->whereIn('c_vessel', $request->vessel)->where('nationalty', $request->country)->where('p_mobi1', '<>', '')->select('p_mobi1', 'email1')->get();
+            $columns = array('mobilenos','email');
+            $callback = function() use($data, $columns) {
+                $file = fopen('php://output', 'w');
+                
+                fputcsv($file, $columns);
+                foreach ($data as $task) {
+                    fputcsv($file, [
+                        substr($task->p_mobi1, -10),
+                        $task->email1
+                    ]);
+                }
+                fclose($file);
+            };
+        } else {
+            return redirect()->back()->with('status', 'Please select type of data');
+        }
+        
         if (count($data) == 0){
             return redirect()->back()->with('status', 'No data found');
         }
@@ -51,20 +100,6 @@ class HomeController extends Controller
             "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
             "Expires"             => "0"
         );
-
-        $columns = array('mobilenos');
-
-        $callback = function() use($data, $columns) {
-            $file = fopen('php://output', 'w');
-            
-            fputcsv($file, $columns);
-            foreach ($data as $task) {
-                fputcsv($file, [
-                    substr($task->p_mobi1, -10)
-                ]);
-            }
-            fclose($file);
-        };
         return response()->stream($callback, 200, $headers);
     }
 

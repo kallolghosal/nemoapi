@@ -14,6 +14,19 @@
                             @csrf
                             <div class="row">
                                 <div class="col-md-12">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="mobile" value="mobile" checked>
+                                    <label class="form-check-label" for="inlineCheckbox1">Mobile numbers</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="email" value="email">
+                                    <label class="form-check-label" for="inlineCheckbox2">Email IDs</label>
+                                </div>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-md-12">
                                     <label>Rank</label>
                                     <select name="rank[]" class="form-select" multiple>
                                         @foreach ($rank as $rk)
@@ -59,6 +72,9 @@
                                 <li>Select Rank</li>
                                 <li>Select Vessel type</li>
                                 <li>Select country</li>
+                                <li>Check email to download emails only</li>
+                                <li>Check mobile to download mobile nos only</li>
+                                <li>Check both to download both</li>
                                 <li>Click Download</li>
                                 <li>A csv file with cleaned list of mobile nos will be downloaded</li>
                             </ul>
