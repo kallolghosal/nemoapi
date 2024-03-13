@@ -8,7 +8,6 @@ use App\Models\VesselModel;
 use App\Models\CountryModel;
 use App\Models\DataModel;
 use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -36,10 +35,23 @@ class HomeController extends Controller
     }
 
     public function downloaddata (Request $request) {
-        //dd($request->vessel);
+
+        $fileName = 'mobilenos.csv';
+        $headers = array(
+            "Content-type"        => "text/csv;charset=UTF-8",
+            "Content-Encoding"    => "UTF-8",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        );
+
         if ($request->mobile && !$request->email) {
             $data = DataModel::whereIn('c_rank', $request->rank)->whereIn('c_vessel', $request->vessel)->where('nationalty', $request->country)->where('p_mobi1', '<>', '')->select('p_mobi1')->get();
             //dd($data);
+            if (count($data) == 0){
+                return redirect()->back()->with('status', 'No data found');
+            }
             $columns = array('mobilenos');
             $callback = function() use($data, $columns) {
                 $file = fopen('php://output', 'w');
@@ -55,6 +67,9 @@ class HomeController extends Controller
         } else if ($request->email && !$request->mobile) {
             $data = DataModel::whereIn('c_rank', $request->rank)->whereIn('c_vessel', $request->vessel)->where('nationalty', $request->country)->where('email1', '<>', '')->select('email1')->get();
             //dd($data);
+            if (count($data) == 0){
+                return redirect()->back()->with('status', 'No data found');
+            }
             $columns = array('emails');
             $callback = function() use($data, $columns) {
                 $file = fopen('php://output', 'w');
@@ -70,6 +85,9 @@ class HomeController extends Controller
             };
         } else if ($request->mobile && $request->email) {
             $data = DataModel::whereIn('c_rank', $request->rank)->whereIn('c_vessel', $request->vessel)->where('nationalty', $request->country)->where('p_mobi1', '<>', '')->select('p_mobi1', 'email1')->get();
+            if (count($data) == 0){
+                return redirect()->back()->with('status', 'No data found');
+            }
             $columns = array('mobilenos','email');
             $callback = function() use($data, $columns) {
                 $file = fopen('php://output', 'w');
@@ -86,20 +104,7 @@ class HomeController extends Controller
         } else {
             return redirect()->back()->with('status', 'Please select type of data');
         }
-        
-        if (count($data) == 0){
-            return redirect()->back()->with('status', 'No data found');
-        }
 
-        $fileName = 'mobilenos.csv';
-        $headers = array(
-            "Content-type"        => "text/csv;charset=UTF-8",
-            "Content-Encoding"    => "UTF-8",
-            "Content-Disposition" => "attachment; filename=$fileName",
-            "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-            "Expires"             => "0"
-        );
         return response()->stream($callback, 200, $headers);
     }
 
