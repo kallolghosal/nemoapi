@@ -29,7 +29,7 @@
                                 <div class="col-md-12">
                                     <label>Rank</label>
                                     <br />
-                                    <select name="rank[]" class="selectpicker" multiple data-live-search="true">
+                                    <select name="rank[]" class="selectpicker" multiple data-live-search="true" required>
                                         @foreach ($rank as $rk)
                                         <option value="{{$rk->rank}}">{{$rk->rank}}</option>
                                         @endforeach
@@ -41,7 +41,7 @@
                                 <div class="col-md-12">
                                     <label>Vessel</label>
                                     <br />
-                                    <select name="vessel[]" class="selectpicker" multiple data-live-search="true">
+                                    <select name="vessel[]" class="selectpicker" multiple data-live-search="true" required>
                                         @foreach ($vessel as $vs)
                                         <option value="{{$vs->vessel}}">{{$vs->vessel}}</option>
                                         @endforeach
@@ -52,7 +52,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <label>Country</label>
-                                    <select name="country" class="selectpicker">
+                                    <select name="country" class="selectpicker" required>
                                         <option value="">Select Country</option>
                                         @foreach ($country as $cn)
                                         <option value="{{$cn->code}}">{{$cn->country}}</option>
