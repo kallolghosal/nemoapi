@@ -71,8 +71,8 @@
                         <div class="col">
                             <h2>Instructions</h2>
                             <ul>
-                                <li>Select Rank</li>
-                                <li>Select Vessel type</li>
+                                <li>Select Rank (click on ranks to select multiple ranks)</li>
+                                <li>Select Vessel type (click on vessels to select multiple vessels)</li>
                                 <li>Select country</li>
                                 <li>Check email to download emails only</li>
                                 <li>Check mobile to download mobile nos only</li>
